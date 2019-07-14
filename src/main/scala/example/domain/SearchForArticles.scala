@@ -3,12 +3,14 @@ package example.domain
 /**
   * Auto-generated classes
   */
+// TODO: proper case naming.
+
 case class SearchForArticles(
     queryTerm: String,
-    totalResults: Double,
-    totalPages: Double,
-    currentPage: Double,
-    count: Double,
+    totalResults: Int,
+    totalPages: Int,
+    currentPage: Int,
+    count: Int,
     results: List[Results]
 )
 

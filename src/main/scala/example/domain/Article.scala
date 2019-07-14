@@ -4,38 +4,41 @@ package example.domain
   * Auto-generated classes
   */
 // TODO: check Maximum length for strings, when building write API
+// TODO: proper case naming.
 
 case class Author(
-    id: Double,
+    id: Int,
     name: String,
     gravatar: String,
     email: String
 )
 case class Smart_groups(
-    id: Double,
+    id: Int,
     name: String
 )
 case class Translations(
-    id: Double,
+    id: Int,
     title: Option[String],
     body: Option[String],
     summary: Option[String],
     machine_summary: Option[String],
-    language_id: String, // TODO:
-    created_at: Option[String], // TODO: unknown by the doc?
-    updated_at: String // TODO:
+    language_id: String,
+    created_at: Option[String],
+    updated_at: String,
+    featured_image_url: Option[String]
 )
 case class Article(
-    id: Double,
+    id: Int,
     title: Option[String],
     author: Option[Author], // TODO: required by doc, yet in response with default article is NOT present
     source: String,
     external_id: Option[String],
-    order: Double,
-    category_id: Double,
+    order: Int,
+    category_id: Int,
     access: String,
     smart_groups: Option[List[Smart_groups]],
-    keywords: Option[List[String]],
+    revision: Option[Revision],
+    keywords: Option[List[String]], // TODO: check it
     notes: Option[String],
     status: String,
     last_publisher: Option[Author],
@@ -45,4 +48,33 @@ case class Article(
     created_at: Option[String], // TODO: required by doc, yet in response with default article is NOT present
     updated_at: String,
     translations: List[Translations]
+)
+
+case class ArticleDetails(article: Article)
+
+case class Contributors(
+    name: String,
+    id: Int,
+    gravatar: String,
+    email: String
+)
+case class Revision(
+    updated_at: String,
+    translations: List[Translations],
+    status: String,
+    source: String,
+    smart_groups: List[Smart_groups],
+    order: Int,
+    notes: Option[String],
+    last_publisher: Option[String],
+    last_published_at: Option[String],
+    keywords: Option[List[String]],
+    id: Int,
+    external_id: Option[String],
+    editor_version: String,
+    created_at: String,
+    contributors: List[Contributors],
+    category_id: Int,
+    author: Contributors,
+    access: String
 )

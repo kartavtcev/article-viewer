@@ -9,7 +9,7 @@ import cats.effect.ContextShift
 import cats.syntax.functor._
 import cats.{Functor, Monad}
 import example.config.ElevioConfig
-import example.domain.ListAllArticlesResponse
+import example.domain._
 import example.infra.HttpClient
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.auto._
@@ -18,8 +18,10 @@ import io.circe.parser._
 import scala.concurrent.ExecutionContext
 
 trait GatewayService[F[_]] {
-  def articleList (page: Option[Int] = None, pageSize: Option[Int] = None, status: Option[String] = None)(
+  def articleList(page: Option[Int] = None, pageSize: Option[Int] = None, status: Option[String] = None)(
       implicit F: Functor[F]): F[Either[io.circe.Error, ListAllArticlesResponse]]
+
+  def articleDetails(id: Int)(implicit F: Functor[F]): F[Either[io.circe.Error, ArticleDetails]]
 }
 
 object GatewayService {
@@ -42,13 +44,25 @@ object GatewayService {
 
       val io = for {
         string <- httpClient.getResponseString(
-          new URI(appcf.apiUrls.base + appcf.apiUrls.allArticles + params),
+          new URI(appcf.apiUrls.base + appcf.apiUrls.articleList + params),
           appcf.apiAuth.key,
           appcf.apiAuth.token)
         result = decode[ListAllArticlesResponse](string) //.leftMap(new IllegalStateException(_): Throwable).raiseOrPure
       } yield result
       ContextShift[F].evalOn(ec)(io)
     }
+
+    def articleDetails(id: Int)(implicit F: Functor[F]): F[Either[io.circe.Error, ArticleDetails]] = {
+      val io = for {
+        string <- httpClient.getResponseString(
+          new URI(appcf.apiUrls.base + appcf.apiUrls.articleDetails + id),
+          appcf.apiAuth.key,
+          appcf.apiAuth.token)
+        result = decode[ArticleDetails](string) //.leftMap(new IllegalStateException(_): Throwable).raiseOrPure
+      } yield result
+      ContextShift[F].evalOn(ec)(io)
+    }
+
   }
 
   private def buildParam[T](name: String, value: Option[T]): Option[String] =
