@@ -30,7 +30,7 @@ trait App extends {
 
         val service = GatewayService[F](HttpClient[F], ec, appcf)
         Resource.liftF(
-          service.listAllArticles
+          service.articleList(None, None, None)
             .flatMap(response => Logger[F].info(s"Response text: ${response}")) // TODO: remove
         )
     }
