@@ -1,5 +1,3 @@
-src/main/resources/application.conf
-
 # sbt
 # (may want to keep parts of 'project')
 bin/
