@@ -2,9 +2,10 @@ package example.services
 
 import java.net.URI
 
+// import cats.syntax.either._
+import cats.effect.ContextShift
 import cats.syntax.functor._
 import cats.{Functor, Monad}
-import cats.effect.ContextShift
 import example.config.ElevioConfig
 import example.domain.ListAllArticlesResponse
 import example.infra.HttpClient
@@ -25,17 +26,15 @@ object GatewayService {
   private class GatewayServiceImpl[F[_]: ContextShift: Monad: Logger](httpClient: HttpClient[F], ec: ExecutionContext, appcf: ElevioConfig)
       extends GatewayService[F] {
 
-    private def getReply(uri: URI, key: String, token: String): F[String] = {
+    def listAllArticles(implicit F: Functor[F]): F[Either[io.circe.Error, ListAllArticlesResponse]] = {
       val io = for {
-        result <- httpClient.getResponseString(uri, key, token)
+        string <- httpClient.getResponseString(
+          new URI(appcf.apiUrls.base + appcf.apiUrls.allArticles),
+          appcf.apiAuth.key,
+          appcf.apiAuth.token)
+        result = decode[ListAllArticlesResponse](string) //.leftMap(new IllegalStateException(_): Throwable).raiseOrPure
       } yield result
       ContextShift[F].evalOn(ec)(io)
     }
-
-    def listAllArticles(implicit F: Functor[F]): F[Either[io.circe.Error, ListAllArticlesResponse]] =
-      for {
-        string <- getReply(new URI(appcf.apiUrls.base + appcf.apiUrls.allArticles), appcf.apiAuth.key, appcf.apiAuth.token)
-        result = decode[ListAllArticlesResponse](string)
-      } yield result
   }
 }

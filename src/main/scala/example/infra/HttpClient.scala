@@ -28,6 +28,6 @@ object HttpClient {
           .headers(Map("Authorization" -> s"Bearer ${token}", "x-api-key" -> key))
           .get(Uri(uri))
           .send()
-        result <- resp.body.leftMap(new IllegalStateException(_): Throwable).raiseOrPure
+        result <- resp.body.leftMap(new IllegalStateException(_): Throwable).raiseOrPure  // TODO: check it
       } yield result
 }
