@@ -9,7 +9,7 @@ import com.softwaremill.sttp.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import io.chrisdavenport.log4cats.Logger
 
 trait  HttpClient[F[_]] {
-  def getString(uri: java.net.URI): F[String]
+  def getString(uri: java.net.URI, key: String, token: String): F[String]
 }
 
 object HttpClient {
@@ -21,9 +21,10 @@ object HttpClient {
   }
 
   def apply[F[_] : cats.MonadError[?[_], Throwable] : Logger](implicit sttpBackend: SttpBackend[F, Nothing]): HttpClient[F] =
-    (uri: java.net.URI) => for {
+    (uri: java.net.URI, key: String, token: String) => for {
       _ <- Logger[F].debug(s"Url call: ${uri.toString}")
-      resp <- sttp.get(Uri(uri)).send()
+      //resp <- sttp.auth.bearer(token).header("x-api-key", key).get(Uri(uri)).send()
+      resp <- sttp.headers(Map("Authorization" -> s"Bearer ${token}", "x-api-key" -> key)).get(Uri(uri)).send()
       result <- resp.body.leftMap(new IllegalStateException(_): Throwable).raiseOrPure
     } yield result
 }

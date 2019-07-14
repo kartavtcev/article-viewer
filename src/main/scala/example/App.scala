@@ -1,9 +1,18 @@
 package example
 
+import java.net.URI
+
+//import cats.syntax.functor._
+import cats.syntax.flatMap._
+
+
 import cats.effect._
+import example.config.ElevioConfig
 import example.infra.{HttpClient, Pools}
+import example.services.GatewayService
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import io.circe.config.parser
 
 trait App extends {
 
@@ -16,15 +25,23 @@ trait App extends {
     val resources = for {
       bc <- HttpClient.sttpBackend
       ec <- Pools.fixedThreadPool
-    } yield (bc, ec)
-    resources // TODO: fix temp
-    /*
-    resources.flatMap { case (bc, ec) =>
-      implicit val backend = bc
-      val client = HttpClient[F]
-      client
+      appcf <- Resource.liftF(parser.decodePathF[F, ElevioConfig]("elevio"))
+    } yield (bc, ec, appcf)
+    //resources // TODO: fix temp
+
+    resources.flatMap {
+      case (bc, ec, appcf) =>
+        implicit val backend = bc
+
+        val client = HttpClient[F]
+        val service = GatewayService[F](client, ec)
+        Resource.liftF(
+          service
+            .getReply(new URI(appcf.apiUrls.base + appcf.apiUrls.allArticles), appcf.apiAuth.key, appcf.apiAuth.token)
+            //.map(response => println(s"Response text: ${response}") )
+            .flatMap(response => Logger[F].info(s"Response text: ${response}")) // TODO: remove
+        )
     }
-   */
   }
 
   def program[F[_]: ConcurrentEffect: ContextShift: Timer] = {

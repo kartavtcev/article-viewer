@@ -5,7 +5,6 @@ import cats.syntax.functor._
 
 object AppIO extends IOApp with App {
 
-  override def run(args: List[String]): IO[ExitCode] = program[IO].use(_ => IO.never.as(ExitCode.Success))
+  override def run(args: List[String]): IO[ExitCode] = program[IO].use(_ => IO.unit.as(ExitCode.Success))
   //.handleErrorWith(_ => IO.unit)  // TODO: handle & log errors.
-
 }
