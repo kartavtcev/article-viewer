@@ -1,12 +1,7 @@
 package example
 
-import java.net.URI
-
-//import cats.syntax.functor._
-import cats.syntax.flatMap._
-
-
 import cats.effect._
+import cats.syntax.flatMap._
 import example.config.ElevioConfig
 import example.infra.{HttpClient, Pools}
 import example.services.GatewayService
@@ -33,11 +28,9 @@ trait App extends {
       case (bc, ec, appcf) =>
         implicit val backend = bc
 
-        val service = GatewayService[F](HttpClient[F], ec)
+        val service = GatewayService[F](HttpClient[F], ec, appcf)
         Resource.liftF(
-          service
-            .getReply(new URI(appcf.apiUrls.base + appcf.apiUrls.allArticles), appcf.apiAuth.key, appcf.apiAuth.token)
-            //.map(response => println(s"Response text: ${response}") )
+          service.listAllArticles
             .flatMap(response => Logger[F].info(s"Response text: ${response}")) // TODO: remove
         )
     }

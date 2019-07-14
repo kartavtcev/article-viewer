@@ -3,7 +3,6 @@ package example.domain
 /**
   * Auto-generated classes
   */
-
 // TODO: check Maximum length for strings, when building write API
 
 case class Author(
@@ -41,7 +40,7 @@ case class Article(
     status: String,
     last_publisher: Option[Author],
     last_published_at: Option[String], // TODO: required by doc, yet in response with default article is NOT present
-    contributors: Option[List[Author]],  // TODO: required by doc, yet in response with default article is NOT present
+    contributors: Option[List[Author]], // TODO: required by doc, yet in response with default article is NOT present
     editor_version: String,
     created_at: Option[String], // TODO: required by doc, yet in response with default article is NOT present
     updated_at: String,

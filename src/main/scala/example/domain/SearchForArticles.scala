@@ -3,7 +3,6 @@ package example.domain
 /**
   * Auto-generated classes
   */
-
 case class SearchForArticles(
     queryTerm: String,
     totalResults: Double,
