@@ -1,6 +1,5 @@
 package example.infra
 
-
 import cats.Functor
 import cats.effect._
 import cats.syntax.either._
@@ -13,20 +12,17 @@ import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.auto._
 import io.circe.parser._
 
-
 trait HttpClient[F[_]] {
 
   def getString(uri: java.net.URI, key: String, token: String): F[String]
 
-  def listAllArticles(uri: java.net.URI, key: String, token: String)(implicit F: Functor[F]): F[Either[io.circe.Error, ListAllArticlesResponse]] = {
-
-
-    //getString(uri, key, token).map(_.as[ListAllArticlesResponse])
+  def listAllArticles(uri: java.net.URI, key: String, token: String)(
+      implicit F: Functor[F]): F[Either[io.circe.Error, ListAllArticlesResponse]] =
     for {
       string <- getString(uri, key, token)
-      result = decode[ListAllArticlesResponse](string) //string.as[ListAllArticlesResponse]
+      result = decode[ListAllArticlesResponse](string)
     } yield result
-  }
+
 }
 
 object HttpClient {
@@ -40,8 +36,7 @@ object HttpClient {
   def apply[F[_]: cats.MonadError[?[_], Throwable]: Logger](implicit sttpBackend: SttpBackend[F, Nothing]): HttpClient[F] =
     (uri: java.net.URI, key: String, token: String) =>
       for {
-        _ <- Logger[F].debug(s"Url call: ${uri.toString}")
-        //resp <- sttp.auth.bearer(token).header("x-api-key", key).get(Uri(uri)).send()
+        _ <- Logger[F].info(s"Url call: ${uri.toString}")
         resp <- sttp
           .headers(Map("Authorization" -> s"Bearer ${token}", "x-api-key" -> key))
           .get(Uri(uri))

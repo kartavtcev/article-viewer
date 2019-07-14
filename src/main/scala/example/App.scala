@@ -33,8 +33,7 @@ trait App extends {
       case (bc, ec, appcf) =>
         implicit val backend = bc
 
-        val client = HttpClient[F]
-        val service = GatewayService[F](client, ec)
+        val service = GatewayService[F](HttpClient[F], ec)
         Resource.liftF(
           service
             .getReply(new URI(appcf.apiUrls.base + appcf.apiUrls.allArticles), appcf.apiAuth.key, appcf.apiAuth.token)

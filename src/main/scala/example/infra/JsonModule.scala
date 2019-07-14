@@ -5,7 +5,6 @@ import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 
 object JsonModule {
-  //implicit val genDevConfig: Configuration = Configuration.default.withDiscriminator("$type")
   implicit lazy val decodeAuthor: Decoder[Author] = deriveDecoder[Author]
   implicit lazy val encodeAuthor: Encoder[Author] = deriveEncoder[Author]
 
@@ -26,6 +25,4 @@ object JsonModule {
 
   implicit lazy val decodeSearchForArticles: Decoder[SearchForArticles] = deriveDecoder[SearchForArticles]
   implicit lazy val encodeSearchForArticles: Encoder[SearchForArticles] = deriveEncoder[SearchForArticles]
-  //def decode(str : String) : scala.Either[io.circe.Error, ListAllArticlesResponse] = io.circe.parser.decode[ListAllArticlesResponse](str)
-  ///def toJson(msg : ListAllArticlesResponse) = msg.asJson.pretty(Printer.noSpaces.copy(dropNullValues = true))
 }
