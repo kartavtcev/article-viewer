@@ -23,7 +23,8 @@ lazy val catsDeps = Seq(
 
 lazy val sttpDeps = Seq(
   "com.softwaremill.sttp" %% "core" % SttpVersion,
-  "com.softwaremill.sttp" %% "async-http-client-backend-cats" % SttpVersion
+  "com.softwaremill.sttp" %% "async-http-client-backend-cats" % SttpVersion,
+  "com.softwaremill.sttp" %% "circe" % "1.6.2"
 )
 
 
@@ -32,6 +33,7 @@ lazy val circeDeps = Seq(
   "io.circe" %% "circe-generic" % CirceVersion,
   "io.circe" %% "circe-optics" % CirceOpticsVersion,
   "io.circe" %% "circe-config" % CirceConfigVersion,
+  "io.circe" %% "circe-generic-extras" % CirceVersion,
 )
 
 lazy val otherDeps = Seq(

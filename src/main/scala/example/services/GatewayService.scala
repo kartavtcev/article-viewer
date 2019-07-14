@@ -23,8 +23,9 @@ object GatewayService {
 
     def getReply(uri: URI, key: String, token: String): F[String] = {
       val io = for {
-        result <- httpClient.getString(uri, key, token)
-      } yield result
+        result <- httpClient.listAllArticles(uri, key, token)
+        //result <- httpClient.getString(uri, key, token)
+      } yield result.toString
       ContextShift[F].evalOn(ec)(io)
     }
   }
