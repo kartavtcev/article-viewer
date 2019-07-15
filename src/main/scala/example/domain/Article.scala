@@ -3,7 +3,7 @@ package example.domain
 /**
   * Auto-generated classes
   */
-// TODO: check Maximum length for strings, when building write API
+// TODO: check Maximum length for strings, when querying write API
 // TODO: proper case naming.
 
 case class Author(

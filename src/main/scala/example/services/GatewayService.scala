@@ -3,7 +3,6 @@ package example.services
 import java.net.URI
 
 import cats.data.NonEmptyList
-import example.ui.Commands
 
 // import cats.syntax.either._
 import cats.effect.ContextShift

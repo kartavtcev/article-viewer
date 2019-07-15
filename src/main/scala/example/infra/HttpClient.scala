@@ -25,7 +25,7 @@ object HttpClient {
       for {
         _ <- Logger[F].info(s"Url call: ${uri.toString}")
         resp <- sttp
-          .headers(Map("Authorization" -> s"Bearer ${token}", "x-api-key" -> key))    // TODO: refactor specific headers out. OK for the demo.
+          .headers(Map("Authorization" -> s"Bearer ${token}", "x-api-key" -> key))    // TODO: refactor specific headers out.
           .get(Uri(uri))
           .send()
         result <- resp.body.leftMap(new IllegalStateException(_): Throwable).raiseOrPure  // TODO: check it

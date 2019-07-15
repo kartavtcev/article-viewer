@@ -1,4 +1,4 @@
-package example.ui
+package example.services
 
 object Commands {
   val articleList = "article-list"
