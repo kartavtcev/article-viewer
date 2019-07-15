@@ -10,4 +10,6 @@ object Commands {
   val paramStatus = "status"
 
   val paramQuery = "query"
+
+  val langCodeDefault = "en"
 }

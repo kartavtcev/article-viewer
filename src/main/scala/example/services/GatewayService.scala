@@ -2,6 +2,7 @@ package example.services
 
 import java.net.URI
 
+import cats.data.NonEmptyList
 import example.ui.Commands
 
 // import cats.syntax.either._
@@ -19,9 +20,12 @@ import scala.concurrent.ExecutionContext
 
 trait GatewayService[F[_]] {
   def articleList(page: Option[Int] = None, pageSize: Option[Int] = None, status: Option[String] = None)(
-      implicit F: Functor[F]): F[Either[io.circe.Error, ListAllArticlesResponse]]
+      implicit F: Functor[F]): F[Either[io.circe.Error, ArticleList]]
 
   def articleDetails(id: Int)(implicit F: Functor[F]): F[Either[io.circe.Error, ArticleDetails]]
+
+  def articleSearchByKeyword(query: NonEmptyList[String], langCode: String = Commands.langCodeDefault)(
+      implicit F: Functor[F]): F[Either[io.circe.Error, ArticleSearchByKeyword]]
 }
 
 object GatewayService {
@@ -33,8 +37,16 @@ object GatewayService {
       extends GatewayService[F] {
 
     def articleList(page: Option[Int] = None, pageSize: Option[Int] = None, status: Option[String] = None)(
-        implicit F: Functor[F]): F[Either[io.circe.Error, ListAllArticlesResponse]] = {
+        implicit F: Functor[F]): F[Either[io.circe.Error, ArticleList]] = {
 
+      def buildParam[T](name: String, value: Option[T]): Option[String] =
+        value.map(v => s"${name}=${v.toString}")
+      def paramsStringify(array: Array[Option[String]]) = {
+        array.collect { case Some(v) => v } match {
+          case Array() => ""
+          case array @ Array(h, _*) => array.mkString("?", "&", "")
+        }
+      }
       val params =
         paramsStringify(
           Array(
@@ -47,7 +59,7 @@ object GatewayService {
           new URI(appcf.apiUrls.base + appcf.apiUrls.articleList + params),
           appcf.apiAuth.key,
           appcf.apiAuth.token)
-        result = decode[ListAllArticlesResponse](string) //.leftMap(new IllegalStateException(_): Throwable).raiseOrPure
+        result = decode[ArticleList](string) //.leftMap(new IllegalStateException(_): Throwable).raiseOrPure
       } yield result
       ContextShift[F].evalOn(ec)(io)
     }
@@ -63,14 +75,20 @@ object GatewayService {
       ContextShift[F].evalOn(ec)(io)
     }
 
-  }
+    def articleSearchByKeyword(query: NonEmptyList[String], langCode: String = Commands.langCodeDefault)(
+        implicit F: Functor[F]): F[Either[io.circe.Error, ArticleSearchByKeyword]] = {
 
-  private def buildParam[T](name: String, value: Option[T]): Option[String] =
-    value.map(v => s"${name}=${v.toString}")
-  private def paramsStringify(array: Array[Option[String]]) = {
-    array.collect { case Some(v) => v } match {
-      case Array() => ""
-      case array @ Array(h, _*) => array.mkString("?", "&", "")
+      def paramsStringify(query: NonEmptyList[String]) =
+        "?" + Commands.paramQuery + "=" + query.toList.mkString(",")
+
+      val io = for {
+        string <- httpClient.getResponseString(
+          new URI(appcf.apiUrls.base + appcf.apiUrls.articleSearchByKeyword + langCode + paramsStringify(query)),
+          appcf.apiAuth.key,
+          appcf.apiAuth.token)
+        result = decode[ArticleSearchByKeyword](string) //.leftMap(new IllegalStateException(_): Throwable).raiseOrPure
+      } yield result
+      ContextShift[F].evalOn(ec)(io)
     }
   }
 }

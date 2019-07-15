@@ -5,7 +5,7 @@ package example.domain
   */
 // TODO: proper case naming.
 
-case class ListAllArticlesResponse(
+case class ArticleList(
     articles: List[Article],
     page_number: Int,
     page_size: Int,

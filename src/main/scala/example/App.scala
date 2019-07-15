@@ -30,7 +30,8 @@ trait App extends {
 
         val service = GatewayService[F](HttpClient[F], ec, appcf)
         Resource.liftF(
-          service.articleDetails(1)
+          //service.articleSearchByKeyword(NonEmptyList.of("article"))
+          service.articleList()
             .flatMap(response => Logger[F].info(s"Response text: ${response}")) // TODO: remove
         )
     }

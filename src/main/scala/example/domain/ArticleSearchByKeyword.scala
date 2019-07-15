@@ -5,7 +5,7 @@ package example.domain
   */
 // TODO: proper case naming.
 
-case class SearchForArticles(
+case class ArticleSearchByKeyword(
     queryTerm: String,
     totalResults: Int,
     totalPages: Int,
