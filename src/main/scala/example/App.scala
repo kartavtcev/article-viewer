@@ -1,6 +1,5 @@
 package example
 
-import cats.data.NonEmptyList
 import cats.effect._
 import cats.syntax.flatMap._
 import example.config.ElevioConfig
@@ -29,11 +28,28 @@ trait App extends {
         implicit val backend = bc
 
         val service = GatewayService[F](HttpClient[F], ec, appcf)
+
+        for {
+          first <- Resource.liftF(
+            service
+              .articleList()
+              .flatMap(response => Logger[F].info(s"Response text: ${response}")) // TODO: remove
+          )
+
+          second <- Resource.liftF(
+            service
+              .articleDetails(1)
+              .flatMap(response => Logger[F].info(s"Response text: ${response}")) // TODO: remove
+          )
+        } yield (first, second)
+      /*
         Resource.liftF(
           service.articleSearchByKeyword(NonEmptyList.of("article"))
-          //service.articleList()
             .flatMap(response => Logger[F].info(s"Response text: ${response}")) // TODO: remove
         )
+        // Req https://api.elevio-staging.com/v1/search/en?query=article
+        // Returns error: An unexpected error has occurred. Please check the system status or submit a ticket by quoting error id d9e4c118-9b8f-4010-bc26-981de0c22689.
+     */
     }
   }
 
