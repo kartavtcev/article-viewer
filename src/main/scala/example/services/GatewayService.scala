@@ -23,7 +23,7 @@ trait GatewayService[F[_]] {
 
   def articleDetails(id: Int)(implicit F: Functor[F]): F[Either[io.circe.Error, ArticleDetails]]
 
-  def articleSearchByKeyword(query: NonEmptyList[String], langCode: String = Commands.langCodeDefault)(
+  def articleSearchByKeyword(query: NonEmptyList[String], langCode: String = CommandParamTitles.langCodeDefault)(
       implicit F: Functor[F]): F[Either[io.circe.Error, ArticleSearchByKeyword]]
 }
 
@@ -49,9 +49,9 @@ object GatewayService {
       val params =
         paramsStringify(
           Array(
-            buildParam(Commands.paramPage, page),
-            buildParam(Commands.paramPageSize, pageSize),
-            buildParam(Commands.paramStatus, status)))
+            buildParam(CommandParamTitles.paramPage, page),
+            buildParam(CommandParamTitles.paramPageSize, pageSize),
+            buildParam(CommandParamTitles.paramStatus, status)))
 
       val io = for {
         string <- httpClient.getResponseString(
@@ -74,11 +74,11 @@ object GatewayService {
       ContextShift[F].evalOn(ec)(io)
     }
 
-    def articleSearchByKeyword(query: NonEmptyList[String], langCode: String = Commands.langCodeDefault)(
+    def articleSearchByKeyword(query: NonEmptyList[String], langCode: String = CommandParamTitles.langCodeDefault)(
         implicit F: Functor[F]): F[Either[io.circe.Error, ArticleSearchByKeyword]] = {
 
       def paramsStringify(query: NonEmptyList[String]) =
-        "?" + Commands.paramQuery + "=" + query.toList.mkString(",")
+        "?" + CommandParamTitles.paramQuery + "=" + query.toList.mkString(",")
 
       val io = for {
         string <- httpClient.getResponseString(
