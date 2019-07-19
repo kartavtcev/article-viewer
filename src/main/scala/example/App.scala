@@ -34,7 +34,7 @@ trait App extends {
 
         Resource.liftF(for {
           _ <- ConsoleIO.putStrLn(ConsoleCommands.help)
-          input <- ConsoleIO.readLn
+          _ <- ConsoleIO.readLn
             .map(ConsoleCommands.parseCommandWithParams(_))
             .map {
               case Success(ArticleListCommand(page, pageSize, status)) =>
@@ -53,7 +53,7 @@ trait App extends {
               case other @ _ => Logger[F].warn(other.toString)
             }
             .flatten
-        } yield (input))
+        } yield ())
     }
   }
 
