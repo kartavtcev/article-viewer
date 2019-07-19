@@ -6,4 +6,4 @@ How to run:
 
 Tech used: Cats Effect, Sttp, Circe, Logback, ScalaFmt, Tagless Final style.
 
-TODO: UI, tests. 
+TODO: tests. 
